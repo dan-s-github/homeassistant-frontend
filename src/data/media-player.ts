@@ -522,3 +522,18 @@ export const mediaPlayerJoin = (
 
 export const mediaPlayerUnjoin = (hass: HomeAssistant, entity_id: string) =>
   hass.callService("media_player", "unjoin", {}, { entity_id });
+
+export const mediaPlayerGetGroupablePlayers = async (
+  hass: HomeAssistant,
+  entity_id: string
+): Promise<string[]> => {
+  const response = await hass.callService(
+    "media_player",
+    "get_groupable_players",
+    {},
+    { entity_id },
+    true,
+    true
+  );
+  return response?.response?.[entity_id]?.result || [];
+};
