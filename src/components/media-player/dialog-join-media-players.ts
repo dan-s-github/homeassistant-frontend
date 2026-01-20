@@ -47,6 +47,7 @@ class DialogJoinMediaPlayers extends LitElement {
 
   public async showDialog(params: JoinMediaPlayersDialogParams): Promise<void> {
     this._entityId = params.entityId;
+    this._loading = true;
 
     const stateObj = this.hass.states[params.entityId] as
       | MediaPlayerEntity
@@ -59,18 +60,32 @@ class DialogJoinMediaPlayers extends LitElement {
 
     this._selectedEntities = this._groupMembers;
 
-    // Load groupable players from the new service
-    if (isServiceLoaded(this.hass, "media_player", "get_groupable_players")) {
-      try {
-        this._joinableMembers = await mediaPlayerGetGroupablePlayers(
-          this.hass,
-          params.entityId
-        );
-      } catch (_err) {
+    try {
+      // Load groupable players from the new service
+      if (isServiceLoaded(this.hass, "media_player", "get_groupable_players")) {
+        try {
+          const joinableMembers = await mediaPlayerGetGroupablePlayers(
+            this.hass,
+            params.entityId
+          );
+          // Guard against stale responses if dialog was closed or reopened for another entity
+          if (this._entityId === params.entityId) {
+            this._joinableMembers = joinableMembers;
+          }
+        } catch (_err) {
+          // Guard against stale responses if dialog was closed or reopened for another entity
+          if (this._entityId === params.entityId) {
+            this._joinableMembers = undefined;
+          }
+        }
+      } else {
         this._joinableMembers = undefined;
       }
-    } else {
-      this._joinableMembers = undefined;
+    } finally {
+      // Guard against stale responses if dialog was closed or reopened for another entity
+      if (this._entityId === params.entityId) {
+        this._loading = false;
+      }
     }
   }
 
@@ -176,7 +191,7 @@ class DialogJoinMediaPlayers extends LitElement {
     }
 
     // If joinable members were loaded from service, use those
-    if (this._joinableMembers) {
+    if (this._joinableMembers !== undefined) {
       return this._joinableMembers
         .filter((entityId) => entityId in entities)
         .map((entityId) => entities[entityId]);
