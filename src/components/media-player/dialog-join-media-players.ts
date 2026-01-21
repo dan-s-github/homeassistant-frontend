@@ -71,11 +71,15 @@ class DialogJoinMediaPlayers extends LitElement {
           // Guard against stale responses if dialog was closed or reopened for another entity
           if (this._entityId === params.entityId) {
             this._joinableMembers = joinableMembers;
+            this._error = undefined;
           }
         } catch (_err) {
           // Guard against stale responses if dialog was closed or reopened for another entity
           if (this._entityId === params.entityId) {
             this._joinableMembers = undefined;
+            this._error = this.hass.localize(
+              "ui.card.media_player.groupable_players_load_error"
+            );
           }
         }
       } else {
@@ -147,7 +151,7 @@ class DialogJoinMediaPlayers extends LitElement {
             disabled
           ></ha-media-player-toggle>
           ${this._loading
-            ? html`<div class="loading">
+            ? html`<div class="loading" role="status" aria-live="polite">
                 <ha-spinner></ha-spinner>
                 <p>
                   ${this.hass.localize("ui.card.media_player.loading_members")}

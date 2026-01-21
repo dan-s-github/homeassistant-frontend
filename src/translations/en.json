@@ -244,6 +244,7 @@
         "media_players": "Media players",
         "select_all": "Select all",
         "loading_members": "Loading available players...",
+        "groupable_players_load_error": "Failed to load available players. Showing players from the same platform.",
         "idle": "Idle",
         "track_position": "Track position"
       },

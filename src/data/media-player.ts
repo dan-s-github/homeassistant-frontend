@@ -527,6 +527,12 @@ interface GetGroupablePlayersResult {
   result?: string[];
 }
 
+/**
+ * Get groupable players for a media player entity.
+ * @param hass Home Assistant object
+ * @param entity_id entity ID of the media player
+ * @returns array of entity IDs of media players that can be grouped with the given entity
+ */
 export const mediaPlayerGetGroupablePlayers = async (
   hass: HomeAssistant,
   entity_id: string
