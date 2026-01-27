@@ -61,20 +61,17 @@ class DialogJoinMediaPlayers extends LitElement {
     this._selectedEntities = this._groupMembers;
 
     try {
-      // Load groupable players from the new service
       if (isServiceLoaded(this.hass, "media_player", "get_groupable_players")) {
         try {
           const joinableMembers = await mediaPlayerGetGroupablePlayers(
             this.hass,
             params.entityId
           );
-          // Guard against stale responses if dialog was closed or reopened for another entity
           if (this._entityId === params.entityId) {
             this._joinableMembers = joinableMembers;
             this._error = undefined;
           }
         } catch (_err) {
-          // Guard against stale responses if dialog was closed or reopened for another entity
           if (this._entityId === params.entityId) {
             this._joinableMembers = undefined;
             this._error = this.hass.localize(
@@ -86,7 +83,6 @@ class DialogJoinMediaPlayers extends LitElement {
         this._joinableMembers = undefined;
       }
     } finally {
-      // Guard against stale responses if dialog was closed or reopened for another entity
       if (this._entityId === params.entityId) {
         this._loading = false;
       }
